@@ -1,10 +1,60 @@
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
-import { siteMetadata } from '@/lib/site-metadata'
 import './globals.css'
 
-export const metadata: Metadata = siteMetadata
+export const metadata: Metadata = {
+  title: 'Tarik BEN LAKHDAR - CEO & Strategic Leader | Transformation Digitale',
+  description: 'Expert en transformation digitale et leadership stratégique. Accompagnement des entreprises vers l\'excellence opérationnelle et la croissance durable.',
+  keywords: [
+    'transformation digitale',
+    'leadership',
+    'fintech',
+    'innovation',
+    'coaching',
+    'stratégie',
+    'croissance',
+    'management',
+    'expertise',
+    'consultant'
+  ],
+  authors: [{ name: 'Tarik BEN LAKHDAR' }],
+  creator: 'Tarik BEN LAKHDAR',
+  publisher: 'Tarik BEN LAKHDAR',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://tarik-benlakhdar.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Tarik BEN LAKHDAR - CEO & Strategic Leader',
+    description: 'Expert en transformation digitale et leadership stratégique. Transformons votre vision en réalité.',
+    url: 'https://tarik-benlakhdar.com',
+    siteName: 'Tarik BEN LAKHDAR',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Tarik BEN LAKHDAR - CEO & Strategic Leader',
+      },
+    ],
+    locale: 'fr_FR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Tarik BEN LAKHDAR - CEO & Strategic Leader',
+    description: 'Expert en transformation digitale et leadership stratégique.',
+    images: ['/images/twitter-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function RootLayout({
   children,
@@ -14,13 +64,6 @@ export default function RootLayout({
   return (
     <html lang="fr" className="scroll-smooth">
       <head>
-        <style>{`
-html {
-  font-family: ${GeistSans.style.fontFamily};
-  --font-sans: ${GeistSans.variable};
-  --font-mono: ${GeistMono.variable};
-}
-        `}</style>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.ico" />

@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Optimisations de performance
   experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // optimizeCss: true, // Désactivé temporairement
   },
-
-  // Optimisation des images
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -15,13 +11,20 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-
-  // Compression et optimisation
-  compress: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   poweredByHeader: false,
-
-  // Headers de sécurité
-  async headers() {
+  compress: true,
+  generateEtags: false,
+  httpAgentOptions: {
+    keepAlive: true,
+  },
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  headers: async () => {
     return [
       {
         source: '/(.*)',
@@ -39,6 +42,10 @@ const nextConfig = {
             value: 'origin-when-cross-origin',
           },
           {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+          {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
@@ -46,8 +53,6 @@ const nextConfig = {
       },
     ]
   },
-
-  // Redirections
   async redirects() {
     return [
       {
@@ -57,12 +62,19 @@ const nextConfig = {
       },
     ]
   },
-
-  // Configuration webpack pour l'optimisation
-  webpack: (config, { dev, isServer }) => {
-    // Optimisations pour la production
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/health',
+        destination: '/api/health-check',
+      },
+    ]
+  },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Optimisations webpack
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
         chunks: 'all',
         cacheGroups: {
           vendor: {
@@ -70,31 +82,28 @@ const nextConfig = {
             name: 'vendors',
             chunks: 'all',
           },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            enforce: true,
-          },
         },
-      }
+      },
     }
 
-    // Optimisation des modules
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, './'),
-    }
+    // Optimisation des images
+    config.module.rules.push({
+      test: /\.(png|jpe?g|gif|svg|webp|avif)$/i,
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            limit: 8192,
+            fallback: 'file-loader',
+            publicPath: '/_next/static/images/',
+            outputPath: 'static/images/',
+          },
+        },
+      ],
+    })
 
     return config
   },
-
-  // Configuration TypeScript
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-
-  // Configuration ESLint
   eslint: {
     ignoreDuringBuilds: false,
   },
